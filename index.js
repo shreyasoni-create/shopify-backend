@@ -10,35 +10,14 @@ app.get("/" , (req , res)=>{
 
 app.post("/webhook/order-created", async (req, res) => {
 
-  console.log("Order ID:", req.body.id);
+  console.log("========== WEBHOOK RECEIVED ==========");
+  console.log("Time:", new Date().toISOString());
 
-  console.log(
-    "Customer:",
-    req.body.customer.first_name,
-    req.body.customer.last_name
-  );
+  console.log(JSON.stringify(req.body, null, 2));
 
-  console.log("Email:", req.body.customer.email);
+  res.status(200).send("OK");
 
-  console.log("Total Price:", req.body.total_price);
-
-  for (let i = 0; i < req.body.line_items.length; i++) {
-
-    console.log(
-      "Product:",
-      req.body.line_items[i].title
-    );
-
-    console.log(
-      "Quantity:",
-      req.body.line_items[i].quantity
-    );
-  
-  }
-
-  res.send("Shopify Order Received");
-
-}); 
+});
 
 const PORT = process.env.PORT || 3000;
 
