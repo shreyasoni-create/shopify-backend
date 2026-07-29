@@ -8,14 +8,11 @@ app.get("/" , (req , res)=>{
 
 });
 
-app.post("/webhook/order-created", async (req, res) => {
+app.post("/webhook/order-created", (req, res) => {
 
-  console.log("========== WEBHOOK RECEIVED ==========");
-  console.log("Time:", new Date().toISOString());
+  console.log("WEBHOOK HIT");
 
-  console.log(JSON.stringify(req.body, null, 2));
-
-  res.status(200).send("OK");
+  res.send("OK");
 
 });
 
