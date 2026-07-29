@@ -9,11 +9,12 @@ app.get("/" , (req , res)=>{
 });
 
 app.post("/webhook/order-created", (req, res) => {
+console.log("Order ID:", req.body.id);
+console.log("Customer:", req.body.customer.first_name, req.body.customer.last_name);
 
-  console.log("=================================");
-  console.log("WEBHOOK HIT");
-  console.log("TIME:", new Date().toISOString());
-  console.log("=================================");
+for (let i = 0; i < req.body.line_items.length; i++) {
+  console.log(req.body.line_items[i].title);
+}
 
   res.send("OK");
 
