@@ -7,14 +7,11 @@ app.get("/" , (req , res)=>{
     res.send("hello this is my first backend ");
 
 });
-
 app.post("/webhook/order-created", (req, res) => {
-console.log("Order ID:", req.body.id);
-console.log("Customer:", req.body.customer.first_name, req.body.customer.last_name);
 
-for (let i = 0; i < req.body.line_items.length; i++) {
-  console.log(req.body.line_items[i].title);
-}
+  console.log("WEBHOOK HIT");
+
+  console.log(req.body);
 
   res.send("OK");
 
