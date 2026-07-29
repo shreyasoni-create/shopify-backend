@@ -10,7 +10,10 @@ app.get("/" , (req , res)=>{
 
 app.post("/webhook/order-created", (req, res) => {
 
+  console.log("=================================");
   console.log("WEBHOOK HIT");
+  console.log("TIME:", new Date().toISOString());
+  console.log("=================================");
 
   res.send("OK");
 
