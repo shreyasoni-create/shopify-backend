@@ -9,7 +9,11 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("hello this is my first backend");
+
+  console.log(req.query);
+
+  res.send("hello this is my first backend");
+
 });
 app.get("/test-post", async (req, res) => {
 
