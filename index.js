@@ -10,7 +10,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
 
-  console.log(req.query);
+console.log("STORE =", req.query.shop);
 
   res.send("hello this is my first backend");
 
