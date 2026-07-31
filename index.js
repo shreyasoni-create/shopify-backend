@@ -9,10 +9,13 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send(`
-    <h1>Shopify App Connected</h1>
-    <p>Store: ${req.query.shop}</p>
-  `);
+
+  console.log("STORE =", req.query.shop);
+
+  console.log("TOKEN EXISTS =", !!req.query.id_token);
+
+  res.send("Shopify App Connected");
+
 
 
   res.send("hello this is my first backend");
