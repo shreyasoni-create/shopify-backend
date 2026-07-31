@@ -9,8 +9,11 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
+  res.send(`
+    <h1>Shopify App Connected</h1>
+    <p>Store: ${req.query.shop}</p>
+  `);
 
-console.log("STORE =", req.query.shop);
 
   res.send("hello this is my first backend");
 
