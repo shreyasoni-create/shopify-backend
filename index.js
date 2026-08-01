@@ -82,6 +82,9 @@ console.log(order);
   res.send("OK");
 
 });
+app.get("/test-shopify", (req, res) => {
+  res.send("Shopify Route Working");
+});
 
 const PORT = process.env.PORT || 3000;
 
