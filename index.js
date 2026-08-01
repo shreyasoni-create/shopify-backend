@@ -100,7 +100,7 @@ app.get("/install", (req, res) => {
     `?client_id=${process.env.SHOPIFY_CLIENT_ID}` +
     `&scope=read_products,read_orders` +
     `&redirect_uri=${process.env.APP_URL}/callback`;
-
+console.log(redirectUrl);
   res.redirect(redirectUrl);
 
 });
