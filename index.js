@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const Order = require("./models/Order");
 const mongoose = require("mongoose");
 
 require("dotenv").config();
@@ -60,10 +61,15 @@ app.post("/webhook/order-created", (req, res) => {
 
   const totalPrice = req.body.total_price;
 
-  console.log("Order ID:", orderId);
-  console.log("Customer:", customerName);
-  console.log("Email:", email);
-  console.log("Total:", totalPrice);
+    const order = new Order({
+        orderId,
+        customerName,
+        email,
+        totalPrice
+    });
+
+    console.log(order);
+
 
   res.send("OK");
 
