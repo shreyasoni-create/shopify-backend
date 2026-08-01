@@ -84,9 +84,35 @@ console.log(order);
   res.send("OK");
 
 });
+
+
+
 app.get("/test-shopify", (req, res) => {
   res.send("Shopify Route Working");
 });
+
+app.get("/install", (req, res) => {
+
+  const shop = req.query.shop;
+
+  const redirectUrl =
+    `https://${shop}/admin/oauth/authorize` +
+    `?client_id=${process.env.SHOPIFY_CLIENT_ID}` +
+    `&scope=read_products,read_orders` +
+    `&redirect_uri=${process.env.APP_URL}/callback`;
+
+  res.redirect(redirectUrl);
+
+});
+app.get("/callback", (req, res) => {
+
+  console.log(req.query);
+
+  res.send("OAuth Callback Hit");
+
+});
+
+
 
 const PORT = process.env.PORT || 3000;
 
