@@ -4,7 +4,14 @@ const Order = require("./models/Order");
 const mongoose = require("mongoose");
 
 require("dotenv").config();
-
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => {
+    console.log("MongoDB Connected");
+})
+.catch((error) => {
+    console.log("MongoDB Connection Failed");
+    console.log(error.message);
+});
 const app = express();
 
 app.use(express.json());
@@ -48,7 +55,7 @@ app.get("/test-post", async (req, res) => {
   }
 
 });
-app.post("/webhook/order-created", (req, res) => {
+app.post("/webhook/order-created", async (req, res) => {
 
   const orderId = req.body.id;
 
@@ -67,8 +74,9 @@ app.post("/webhook/order-created", (req, res) => {
         email,
         totalPrice
     });
-
-    console.log(order);
+await order.save();
+console.log(order);
+   console.log("Order Saved");
 
 
   res.send("OK");
