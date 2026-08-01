@@ -17,6 +17,8 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
+    console.log("QUERY =", req.query);
+console.log("HEADERS =", req.headers);
 
   console.log("STORE =", req.query.shop);
 
