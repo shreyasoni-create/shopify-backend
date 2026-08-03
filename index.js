@@ -250,17 +250,18 @@ app.get("/graphql-products", async (req, res) => {
     const accessToken = tokenResponse.data.access_token;
 
     const query = `
-    {
-      products(first: 5) {
-        nodes {
-          id
-          title
-            vendor
-      handle
+  {
+  products(first: 5) {
+    nodes {
+      id
+      title
+      vendor
       featuredImage {
-        }
+        url
       }
     }
+  }
+}
     `;
 
     const response = await axios.post(
