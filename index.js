@@ -251,13 +251,17 @@ app.get("/graphql-products", async (req, res) => {
 
     const query = `
   {
-  products(first: 5) {
+
+  products(first: 3) {
     nodes {
-      id
       title
-      vendor
-      featuredImage {
-        url
+
+      variants(first: 10) {
+        nodes {
+          title
+          sku
+          price
+        }
       }
     }
   }
