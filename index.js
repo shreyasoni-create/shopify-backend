@@ -178,6 +178,57 @@ app.get("/products", async (req, res) => {
 
 });
 
+app.get("/send-product", async (req, res) => {
+
+  try {
+
+    const tokenResponse = await axios.post(
+      `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+      new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: process.env.SHOPIFY_CLIENT_ID,
+        client_secret: process.env.SHOPIFY_CLIENT_SECRET
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+
+    const productResponse = await axios.get(
+      `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/products.json?limit=1`,
+      {
+        headers: {
+          "X-Shopify-Access-Token": accessToken
+        }
+      }
+    );
+
+    const product = productResponse.data.products[0];
+
+    const apiResponse = await axios.post(
+      "https://jsonplaceholder.typicode.com/posts",
+      {
+        productId: product.id,
+        title: product.title
+      }
+    );
+
+    res.json(apiResponse.data);
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+
+    res.send("Failed");
+
+  }
+
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
