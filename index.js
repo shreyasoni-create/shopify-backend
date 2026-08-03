@@ -4,8 +4,27 @@ const Order = require("./models/Order");
 const mongoose = require("mongoose");
 
 require("dotenv").config();
+const crypto = require("crypto");
+
+function verifyWebhook(req) {
+
+  const hmacHeader = req.get("X-Shopify-Hmac-Sha256");
+
+  const generatedHash = crypto
+    .createHmac(
+      "sha256",
+      process.env.SHOPIFY_WEBHOOK_SECRET
+    )
+    .update(JSON.stringify(req.body))
+    .digest("base64");
+
+  return generatedHash === hmacHeader;
+}
+
+
 
 mongoose.connect(process.env.MONGODB_URI)
+
 .then(() => {
     console.log("MongoDB Connected");
 })
@@ -57,6 +76,16 @@ app.get("/test-post", async (req, res) => {
 app.post("/webhook/order-created", async (req, res) => {
 
     try {
+
+        if (!verifyWebhook(req)) {
+
+            console.log("Invalid HMAC");
+
+            return res.status(401).send("Invalid HMAC");
+
+        }
+
+        console.log("Webhook Verified");
 
         const orderId = req.body.id;
 
