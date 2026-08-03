@@ -112,7 +112,39 @@ app.get("/callback", (req, res) => {
 
 });
 
+app.get("/get-token", async (req, res) => {
 
+  try {
+
+    const params = new URLSearchParams();
+
+    params.append("grant_type", "client_credentials");
+    params.append("client_id", process.env.SHOPIFY_CLIENT_ID);
+    params.append("client_secret", process.env.SHOPIFY_CLIENT_SECRET);
+
+    const response = await axios.post(
+      `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+      params,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+
+    console.log(response.data);
+
+    res.json(response.data);
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+
+    res.send("Token Failed");
+
+  }
+
+});
 
 const PORT = process.env.PORT || 3000;
 
