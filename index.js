@@ -318,6 +318,68 @@ app.get("/create-product", async (req, res) => {
   }
 
 });
+app.get("/update-product", async (req, res) => {
+
+  try {
+
+    const tokenResponse = await axios.post(
+      `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+      new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: process.env.SHOPIFY_CLIENT_ID,
+        client_secret: process.env.SHOPIFY_CLIENT_SECRET
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+
+    const query = `
+      mutation {
+        productUpdate(
+          product: {
+            id: "gid://shopify/Product/8961216970930"
+            title: "Shreya Updated Product"
+          }
+        ) {
+          product {
+            id
+            title
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    const response = await axios.post(
+      `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/graphql.json`,
+      { query },
+      {
+        headers: {
+          "X-Shopify-Access-Token": accessToken,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+
+    res.send("Update Failed");
+
+  }
+
+});
 
 app.get("/graphql-products", async (req, res) => {
 
