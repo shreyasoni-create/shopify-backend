@@ -255,6 +255,9 @@ app.get("/graphql-products", async (req, res) => {
         nodes {
           id
           title
+            vendor
+      handle
+      featuredImage {
         }
       }
     }
