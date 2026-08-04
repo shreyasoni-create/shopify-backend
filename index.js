@@ -142,6 +142,12 @@ app.get("/test-shiprocket", async (req, res) => {
 
   console.log("SHIPROCKET PAYLOAD");
   console.log(shiprocketPayload);
+  const response = await axios.post(
+  "https://jsonplaceholder.typicode.com/posts",
+  shiprocketPayload
+);
+
+console.log(response.data);
 
   res.send("Payload Created");
 
