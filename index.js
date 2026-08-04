@@ -109,6 +109,16 @@ app.post("/webhook/order-created", async (req, res) => {
 
         console.log(order);
         console.log("Order Saved");
+        
+        const shiprocketPayload = {
+  order_id: orderId,
+  customer_name: customerName,
+  email: email,
+  total: totalPrice
+};
+
+console.log("SHIPROCKET PAYLOAD");
+console.log(shiprocketPayload);
 
         res.send("OK");
 
@@ -119,6 +129,21 @@ app.post("/webhook/order-created", async (req, res) => {
         res.status(500).send("Save Failed");
 
     }
+
+});
+app.get("/test-shiprocket", async (req, res) => {
+
+  const shiprocketPayload = {
+    order_id: 12345,
+    customer_name: "John Smith",
+    email: "john@test.com",
+    total: 999
+  };
+
+  console.log("SHIPROCKET PAYLOAD");
+  console.log(shiprocketPayload);
+
+  res.send("Payload Created");
 
 });
 
