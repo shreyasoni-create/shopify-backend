@@ -274,7 +274,8 @@ app.get("/inventory-learning", async (req, res) => {
         }
       }
     }`;
-
+console.log("URL =", process.env.SHOPIFY_GRAPHQL_URL);
+console.log("TOKEN =", process.env.SHOPIFY_ACCESS_TOKEN);
     const response = await axios.post(
       process.env.SHOPIFY_GRAPHQL_URL,
       { query },
