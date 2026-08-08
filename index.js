@@ -250,7 +250,55 @@ app.get("/test-get", async (req, res) => {
 });
 app.get("/inventory-learning", async (req, res) => {
 
-  res.send("Inventory Learning Route");
+  try {
+
+    const query = `
+    {
+      products(first: 1) {
+        edges {
+          node {
+            title
+
+            variants(first: 10) {
+              edges {
+                node {
+                  title
+
+                  inventoryItem {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }`;
+
+    const response = await axios.post(
+      process.env.SHOPIFY_GRAPHQL_URL,
+      { query },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN
+        }
+      }
+    );
+
+    console.log(
+      JSON.stringify(response.data, null, 2)
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+
+    res.send("Failed");
+
+  }
 
 });
 
