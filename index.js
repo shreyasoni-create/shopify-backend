@@ -302,6 +302,43 @@ console.log("TOKEN =", process.env.SHOPIFY_ACCESS_TOKEN);
   }
 
 });
+app.get("/get-location", async (req, res) => {
+
+  try {
+
+    const query = `
+    {
+      locations(first: 10) {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+    }`;
+
+    const response = await axios.post(
+      process.env.SHOPIFY_GRAPHQL_URL,
+      { query },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN
+        }
+      }
+    );
+
+    res.json(response.data);
+
+  } catch (error) {
+
+    console.log(error.response?.data || error.message);
+    res.send("Failed");
+
+  }
+
+});
 
 app.get("/send-product", async (req, res) => {
 
