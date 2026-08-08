@@ -248,6 +248,11 @@ app.get("/test-get", async (req, res) => {
   res.json(response.data);
 
 });
+app.get("/inventory-learning", async (req, res) => {
+
+  res.send("Inventory Learning Route");
+
+});
 
 app.get("/send-product", async (req, res) => {
 
