@@ -237,6 +237,17 @@ app.get("/products", async (req, res) => {
   }
 
 });
+app.get("/test-get", async (req, res) => {
+
+  const response = await axios.get(
+    "https://jsonplaceholder.typicode.com/users/1"
+  );
+
+  console.log(response.data);
+
+  res.json(response.data);
+
+});
 
 app.get("/send-product", async (req, res) => {
 
