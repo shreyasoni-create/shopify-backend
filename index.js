@@ -116,12 +116,14 @@ app.post("/webhook/order-created", async (req, res) => {
         console.log(order);
         console.log("Order Saved");
         
-        const shiprocketPayload = {
+const shiprocketPayload = {
   order_id: orderId,
   customer_name: customerName,
   email: email,
-  total: totalPrice
+  total: totalPrice,
+  created_at: new Date().toISOString()
 };
+
 
 console.log("SHIPROCKET PAYLOAD");
 console.log(shiprocketPayload);
