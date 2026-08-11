@@ -339,6 +339,23 @@ app.get("/get-location", async (req, res) => {
   }
 
 });
+app.post("/erp-stock-update", async (req, res) => {
+
+  try {
+
+    console.log(req.body);
+
+    res.send("ERP Data Received");
+
+  } catch (error) {
+
+    console.log(error.message);
+
+    res.status(500).send("Failed");
+
+  }
+
+});
 
 app.get("/send-product", async (req, res) => {
 
