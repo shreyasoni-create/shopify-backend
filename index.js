@@ -158,10 +158,12 @@ app.get("/test-shiprocket", async (req, res) => {
 console.log("ERP RESPONSE");
 console.log(response.data);
   console.log(shiprocketPayload);
-  const response = await axios.post(
+ const erpResponse = await axios.post(
   "https://jsonplaceholder.typicode.com/posts",
   shiprocketPayload
 );
+
+console.log(erpResponse.data);
 
 console.log(response.data);
 
