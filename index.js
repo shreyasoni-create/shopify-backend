@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const Order = require("./models/Order");
 const mongoose = require("mongoose");
-app.use(express.json());
+
 
 require("dotenv").config();
 const crypto = require("crypto");
