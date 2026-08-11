@@ -2,10 +2,9 @@ const express = require("express");
 const axios = require("axios");
 const Order = require("./models/Order");
 const mongoose = require("mongoose");
-
-
 require("dotenv").config();
 const crypto = require("crypto");
+
 
 function verifyWebhook(req) {
 
@@ -47,6 +46,10 @@ app.get("/", (req, res) => {
 
 });
 
+
+
+
+
 app.get("/test-post", async (req, res) => {
 
     try {
@@ -73,6 +76,8 @@ app.get("/test-post", async (req, res) => {
     }
 
 });
+
+
 
 app.post("/webhook/order-created", async (req, res) => {
 
@@ -142,6 +147,14 @@ app.get("/test-shiprocket", async (req, res) => {
   };
 
   console.log("SHIPROCKET PAYLOAD");
+
+  const response = await axios.post(
+  "https://jsonplaceholder.typicode.com/posts",
+  shiprocketPayload
+);
+
+console.log("ERP RESPONSE");
+console.log(response.data);
   console.log(shiprocketPayload);
   const response = await axios.post(
   "https://jsonplaceholder.typicode.com/posts",
