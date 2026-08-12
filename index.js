@@ -705,7 +705,7 @@ app.get("/inventory-test", async (req, res) => {
 
     }
 });
-app.get("/update-stock", async (req, res) => {
+app.get("/find-sku", async (req, res) => {
 
     try {
 
@@ -725,34 +725,47 @@ app.get("/update-stock", async (req, res) => {
 
         const accessToken = tokenResponse.data.access_token;
 
-        const response = await axios.post(
-            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/inventory_levels/set.json`,
-            {
-                location_id: 81772970162,
-                inventory_item_id: 48532732248242,
-                available: 25
-            },
+        const response = await axios.get(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/products.json`,
             {
                 headers: {
-                    "X-Shopify-Access-Token": accessToken,
-                    "Content-Type": "application/json"
+                    "X-Shopify-Access-Token": accessToken
                 }
             }
         );
 
-        console.log(response.data);
+        const products = response.data.products;
 
-        res.json(response.data);
+        for (const product of products) {
+
+            for (const variant of product.variants) {
+
+                if (variant.sku === "FOUNDATION-BEIGE") {
+
+                    return res.json({
+                        sku: variant.sku,
+                        inventory_item_id: variant.inventory_item_id,
+                        inventory_quantity: variant.inventory_quantity
+                    });
+
+                }
+
+            }
+
+        }
+
+        res.send("SKU Not Found");
 
     } catch (error) {
 
         console.log(error.response?.data || error.message);
 
-        res.send("Inventory Update Failed");
+        res.send("Failed");
 
     }
 
 });
+
 app.get("/orders", async (req, res) => {
 
   try {
