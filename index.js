@@ -639,13 +639,14 @@ app.get("/locations", async (req, res) => {
 
         res.json(response.data);
 
-    } catch (error) {
+    } 
+    catch (error) {
 
-        console.log(error.response?.data || error.message);
+    console.log("FULL ERROR:");
+    console.log(error.response?.data);
 
-        res.send("Locations Failed");
-
-    }
+    res.send("Locations Failed");
+}
 
 });
 app.get("/orders", async (req, res) => {
