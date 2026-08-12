@@ -623,30 +623,47 @@ app.get("/graphql-products", async (req, res) => {
   }
 
 });
-
 app.get("/locations", async (req, res) => {
 
     try {
+
+        const tokenResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+            new URLSearchParams({
+                grant_type: "client_credentials",
+                client_id: process.env.SHOPIFY_CLIENT_ID,
+                client_secret: process.env.SHOPIFY_CLIENT_SECRET
+            }),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
 
         const response = await axios.get(
             `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/locations.json`,
             {
                 headers: {
-                    "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN
+                    "X-Shopify-Access-Token": accessToken
                 }
             }
         );
 
+        console.log(response.data);
+
         res.json(response.data);
 
-    } 
-    catch (error) {
+    } catch (error) {
 
-    console.log("FULL ERROR:");
-    console.log(error.response?.data);
+        console.log("FULL ERROR:");
+        console.log(error.response?.data || error.message);
 
-    res.send("Locations Failed");
-}
+        res.send("Locations Failed");
+
+    }
 
 });
 app.get("/orders", async (req, res) => {
