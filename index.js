@@ -789,16 +789,21 @@ app.post("/erp-stock-update", async (req, res) => {
             }
         );
 
-        const accessToken = tokenResponse.data.access_token;
+      const accessToken = tokenResponse.data.access_token;
 
-        const productResponse = await axios.get(
-            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/products.json`,
-            {
-                headers: {
-                    "X-Shopify-Access-Token": accessToken
-                }
-            }
-        );
+const productResponse = await axios.get(
+    `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/products.json`,
+    {
+        headers: {
+            "X-Shopify-Access-Token": accessToken
+        }
+    }
+);
+
+console.log("PRODUCTS RECEIVED");
+console.log(productResponse.data.products.length);
+
+console.log("STARTING SKU SEARCH");
 
         let inventoryItemId = null;
 
@@ -870,7 +875,7 @@ app.post("/erp-stock-update", async (req, res) => {
 
     }
 
-});
+});s
 
 app.get("/orders", async (req, res) => {
 
