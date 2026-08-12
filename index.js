@@ -772,6 +772,9 @@ app.post("/erp-stock-update", async (req, res) => {
         const sku = req.body.sku;
         const quantity = req.body.quantity;
 
+        console.log("SKU =", sku);
+        console.log("QUANTITY =", quantity);
+
         const tokenResponse = await axios.post(
             `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
             new URLSearchParams({
@@ -808,12 +811,14 @@ app.post("/erp-stock-update", async (req, res) => {
                     inventoryItemId =
                         variant.inventory_item_id;
 
+                    console.log(
+                        "FOUND INVENTORY ITEM =",
+                        inventoryItemId
+                    );
+
                     break;
-
                 }
-
             }
-
         }
 
         if (!inventoryItemId) {
@@ -821,7 +826,6 @@ app.post("/erp-stock-update", async (req, res) => {
             return res.status(404).json({
                 message: "SKU Not Found"
             });
-
         }
 
         const inventoryResponse = await axios.post(
@@ -839,16 +843,21 @@ app.post("/erp-stock-update", async (req, res) => {
             }
         );
 
+        console.log("SHOPIFY RESPONSE");
+        console.log(inventoryResponse.data);
+
         res.json({
             success: true,
             sku,
             quantity,
             inventory_item_id: inventoryItemId,
-            shopify_response:
+            inventory_response:
                 inventoryResponse.data
         });
 
     } catch (error) {
+
+        console.log("FULL ERROR");
 
         console.log(
             error.response?.data ||
