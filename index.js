@@ -774,7 +774,8 @@ app.post("/erp-stock-update", async (req, res) => {
 
         console.log("SKU =", sku);
         console.log("QUANTITY =", quantity);
-
+        
+console.log("GETTING TOKEN");
         const tokenResponse = await axios.post(
             `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
             new URLSearchParams({
@@ -788,7 +789,7 @@ app.post("/erp-stock-update", async (req, res) => {
                 }
             }
         );
-
+console.log("TOKEN RECEIVED");
       const accessToken = tokenResponse.data.access_token;
 
 const productResponse = await axios.get(
@@ -862,20 +863,19 @@ console.log("STARTING SKU SEARCH");
 
     } catch (error) {
 
-        console.log("FULL ERROR");
+    console.log("FULL ERROR");
 
-        console.log(
-            error.response?.data ||
-            error.message
-        );
+    console.log(error);
 
-        res.status(500).json({
-            error: "Inventory Update Failed"
-        });
+    console.log(error.response?.data);
 
-    }
+    res.status(500).json({
+        error: error.message
+    });
 
-});s
+}
+
+});
 
 app.get("/orders", async (req, res) => {
 
