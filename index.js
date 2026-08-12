@@ -765,6 +765,103 @@ app.get("/find-sku", async (req, res) => {
     }
 
 });
+app.post("/erp-stock-update", async (req, res) => {
+
+    try {
+
+        const sku = req.body.sku;
+        const quantity = req.body.quantity;
+
+        const tokenResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+            new URLSearchParams({
+                grant_type: "client_credentials",
+                client_id: process.env.SHOPIFY_CLIENT_ID,
+                client_secret: process.env.SHOPIFY_CLIENT_SECRET
+            }),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+
+        const productResponse = await axios.get(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/products.json`,
+            {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken
+                }
+            }
+        );
+
+        let inventoryItemId = null;
+
+        for (const product of productResponse.data.products) {
+
+            for (const variant of product.variants) {
+
+                if (variant.sku === sku) {
+
+                    inventoryItemId =
+                        variant.inventory_item_id;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        if (!inventoryItemId) {
+
+            return res.status(404).json({
+                message: "SKU Not Found"
+            });
+
+        }
+
+        const inventoryResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/inventory_levels/set.json`,
+            {
+                location_id: 81772970162,
+                inventory_item_id: inventoryItemId,
+                available: quantity
+            },
+            {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        res.json({
+            success: true,
+            sku,
+            quantity,
+            inventory_item_id: inventoryItemId,
+            shopify_response:
+                inventoryResponse.data
+        });
+
+    } catch (error) {
+
+        console.log(
+            error.response?.data ||
+            error.message
+        );
+
+        res.status(500).json({
+            error: "Inventory Update Failed"
+        });
+
+    }
+
+});
 
 app.get("/orders", async (req, res) => {
 
