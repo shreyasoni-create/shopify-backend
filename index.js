@@ -772,8 +772,14 @@ app.post("/erp-stock-update", async (req, res) => {
         const sku = req.body.sku;
         const quantity = req.body.quantity;
 
-        console.log("SKU =", sku);
-        console.log("QUANTITY =", quantity);
+   console.log("FULL BODY");
+console.log(req.body);
+
+const sku = req.body.sku;
+const quantity = req.body.quantity;
+
+console.log("SKU =", sku);
+console.log("QUANTITY =", quantity);
         
 console.log("GETTING TOKEN");
         const tokenResponse = await axios.post(
