@@ -490,6 +490,8 @@ app.get("/create-product", async (req, res) => {
   }
 
 });
+
+
 app.get("/update-product", async (req, res) => {
 
   try {
@@ -619,6 +621,31 @@ app.get("/graphql-products", async (req, res) => {
     res.send("GraphQL Failed");
 
   }
+
+});
+
+app.get("/locations", async (req, res) => {
+
+    try {
+
+        const response = await axios.get(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/locations.json`,
+            {
+                headers: {
+                    "X-Shopify-Access-Token": process.env.SHOPIFY_ACCESS_TOKEN
+                }
+            }
+        );
+
+        res.json(response.data);
+
+    } catch (error) {
+
+        console.log(error.response?.data || error.message);
+
+        res.send("Locations Failed");
+
+    }
 
 });
 app.get("/orders", async (req, res) => {
