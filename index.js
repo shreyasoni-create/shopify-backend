@@ -367,7 +367,7 @@ app.post("/erp-stock-update", async (req, res) => {
     console.log("SKU =", sku);
     console.log("QUANTITY =", quantity);
 
-    res.send("ERP Data Received");
+
 
 
 
