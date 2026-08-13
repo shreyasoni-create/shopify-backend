@@ -460,7 +460,7 @@ if (!inventoryItemId) {
 const inventoryResponse = await axios.post(
     `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/inventory_levels/set.json`,
     {
-        location_id: 81772970162,
+        location_id: locationId,
         inventory_item_id: inventoryItemId,
         available: quantity
     },
