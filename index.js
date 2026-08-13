@@ -397,7 +397,39 @@ const productResponse = await axios.get(
         }
     }
 );
+const locationResponse = await axios.get(
+    `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/locations.json`,
+    {
+        headers: {
+            "X-Shopify-Access-Token": accessToken
+        }
+    }
+);
 
+let locationId = null;
+
+for (const shopifyLocation of locationResponse.data.locations) {
+
+    if (shopifyLocation.name === location) {
+
+        locationId = shopifyLocation.id;
+
+        console.log(
+            "FOUND LOCATION =",
+            locationId
+        );
+
+        break;
+    }
+}
+
+if (!locationId) {
+
+    return res.status(404).json({
+        message: "Location Not Found",
+        location: location
+    });
+}
 let inventoryItemId = null;
 
 for (const product of productResponse.data.products) {
