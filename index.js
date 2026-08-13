@@ -361,11 +361,13 @@ app.post("/erp-stock-update", async (req, res) => {
 
   try {
 
-    const sku = req.body.sku;
-    const quantity = req.body.quantity;
+const sku = req.body.sku;
+const quantity = req.body.quantity;
+const location = req.body.location;
 
     console.log("SKU =", sku);
     console.log("QUANTITY =", quantity);
+    console.log("LOCATION =", location);
 
 
 
