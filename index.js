@@ -456,7 +456,40 @@ if (!inventoryItemId) {
         message: "SKU Not Found"
     });
 }
+const currentInventoryResponse = await axios.get(
+    `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/inventory_levels.json`,
+    {
+        params: {
+            inventory_item_ids: inventoryItemId,
+            location_ids: locationId
+        },
+        headers: {
+            "X-Shopify-Access-Token": accessToken
+        }
+    }
+);
 
+const currentQuantity =
+    currentInventoryResponse.data.inventory_levels[0]?.available;
+
+console.log("CURRENT SHOPIFY QUANTITY =", currentQuantity);
+console.log("ERP QUANTITY =", quantity);
+
+if (currentQuantity === quantity) {
+
+    console.log("NO UPDATE NEEDED");
+
+    return res.json({
+        success: true,
+        message: "Inventory already up to date",
+        sku,
+        quantity,
+        inventory_item_id: inventoryItemId,
+        location_id: locationId
+    });
+}
+
+console.log("QUANTITY DIFFERENT - UPDATING SHOPIFY");
 const inventoryResponse = await axios.post(
     `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/inventory_levels/set.json`,
     {
