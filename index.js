@@ -732,13 +732,15 @@ app.post("/graphql-update-inventory", async (req, res) => {
                     input: {
                         name: "available",
                         reason: "correction",
-                        quantities: [
-                            {
-                                inventoryItemId: inventoryItemId,
-                                locationId: "gid://shopify/Location/81772970162",
-                                quantity: quantity
-                            }
-                        ]
+                     quantities: [
+    {
+        inventoryItemId: inventoryItemId,
+        locationId: "gid://shopify/Location/81772970162",
+        quantity: quantity,
+        compareQuantity: variant.inventoryQuantity
+    }
+]
+                        
                     }
                 }
             },
