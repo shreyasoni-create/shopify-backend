@@ -621,6 +621,166 @@ app.post("/graphql-find-sku", async (req, res) => {
         });
     }
 });
+app.post("/graphql-update-inventory", async (req, res) => {
+
+    try {
+
+        const sku = req.body.sku;
+        const quantity = req.body.quantity;
+
+        if (!sku) {
+            return res.status(400).json({
+                success: false,
+                message: "SKU is required"
+            });
+        }
+
+        if (quantity === undefined || quantity === null) {
+            return res.status(400).json({
+                success: false,
+                message: "Quantity is required"
+            });
+        }
+
+        // Get Shopify access token
+        const tokenResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+            new URLSearchParams({
+                grant_type: "client_credentials",
+                client_id: process.env.SHOPIFY_CLIENT_ID,
+                client_secret: process.env.SHOPIFY_CLIENT_SECRET
+            }),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+
+        // 1. Find inventory item using SKU
+        const findQuery = `
+            query FindProductBySKU($query: String!) {
+                productVariants(first: 1, query: $query) {
+                    nodes {
+                        sku
+                        inventoryQuantity
+                        inventoryItem {
+                            id
+                        }
+                    }
+                }
+            }
+        `;
+
+        const findResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/graphql.json`,
+            {
+                query: findQuery,
+                variables: {
+                    query: `sku:${sku}`
+                }
+            },
+            {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        const variant =
+            findResponse.data.data.productVariants.nodes[0];
+
+        if (!variant) {
+            return res.status(404).json({
+                success: false,
+                message: "SKU Not Found"
+            });
+        }
+
+        const inventoryItemId =
+            variant.inventoryItem.id;
+
+        console.log("INVENTORY ITEM ID =", inventoryItemId);
+        console.log("CURRENT QUANTITY =", variant.inventoryQuantity);
+        console.log("NEW QUANTITY =", quantity);
+
+        // 2. GraphQL mutation
+        const mutation = `
+            mutation SetInventoryQuantity(
+                $input: InventorySetQuantitiesInput!
+            ) {
+                inventorySetQuantities(input: $input) {
+                    inventoryAdjustmentGroup {
+                        createdAt
+                    }
+                    userErrors {
+                        field
+                        message
+                    }
+                }
+            }
+        `;
+
+        const mutationResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/graphql.json`,
+            {
+                query: mutation,
+                variables: {
+                    input: {
+                        name: "available",
+                        reason: "correction",
+                        quantities: [
+                            {
+                                inventoryItemId: inventoryItemId,
+                                locationId: "gid://shopify/Location/81772970162",
+                                quantity: quantity
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        console.log("GRAPHQL MUTATION RESPONSE");
+        console.log(mutationResponse.data);
+
+        const userErrors =
+            mutationResponse.data.data.inventorySetQuantities.userErrors;
+
+        if (userErrors.length > 0) {
+            return res.status(400).json({
+                success: false,
+                errors: userErrors
+            });
+        }
+
+        return res.json({
+            success: true,
+            sku,
+            quantity,
+            inventory_item_id: inventoryItemId
+        });
+
+    } catch (error) {
+
+        console.log("GRAPHQL UPDATE ERROR");
+        console.log(error.response?.data || error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 app.get("/send-product", async (req, res) => {
 
