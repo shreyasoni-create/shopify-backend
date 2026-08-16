@@ -523,6 +523,104 @@ res.json({
   }
 
 });
+app.post("/graphql-find-sku", async (req, res) => {
+
+    try {
+
+        const sku = req.body.sku;
+
+        // Question: did we receive SKU?
+        if (!sku) {
+            return res.status(400).json({
+                success: false,
+                message: "SKU is required"
+            });
+        }
+
+        const tokenResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+            new URLSearchParams({
+                grant_type: "client_credentials",
+                client_id: process.env.SHOPIFY_CLIENT_ID,
+                client_secret: process.env.SHOPIFY_CLIENT_SECRET
+            }),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+
+        const query = `
+            query FindProductBySKU($query: String!) {
+                productVariants(first: 1, query: $query) {
+                    nodes {
+                        id
+                        title
+                        sku
+                        inventoryQuantity
+                        inventoryItem {
+                            id
+                        }
+                        product {
+                            title
+                        }
+                    }
+                }
+            }
+        `;
+
+        const response = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/graphql.json`,
+            {
+                query: query,
+                variables: {
+                    query: `sku:${sku}`
+                }
+            },
+            {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        console.log("GRAPHQL RESPONSE");
+        console.log(response.data);
+
+        const variant = response.data.data.productVariants.nodes[0];
+
+        // Question: did Shopify find the SKU?
+        if (!variant) {
+            return res.status(404).json({
+                success: false,
+                message: "SKU Not Found"
+            });
+        }
+
+        return res.json({
+            success: true,
+            sku: variant.sku,
+            variant_name: variant.title,
+            product_name: variant.product.title,
+            inventory_item_id: variant.inventoryItem.id,
+            current_quantity: variant.inventoryQuantity
+        });
+
+    } catch (error) {
+
+        console.log("GRAPHQL ERROR");
+        console.log(error.response?.data || error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 app.get("/send-product", async (req, res) => {
 
