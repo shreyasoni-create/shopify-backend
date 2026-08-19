@@ -4,7 +4,36 @@ const Order = require("./models/Order");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const crypto = require("crypto");
+async function retryRequest(requestFunction, retries = 3) {
 
+    for (let attempt = 1; attempt <= retries; attempt++) {
+
+        try {
+
+            return await requestFunction();
+
+        } catch (error) {
+
+            console.log(
+                `REQUEST FAILED - ATTEMPT ${attempt}/${retries}`
+            );
+
+            if (attempt === retries) {
+                throw error;
+            }
+
+            const waitTime = attempt * 1000;
+
+            console.log(
+                `WAITING ${waitTime}ms BEFORE RETRY`
+            );
+
+            await new Promise(resolve =>
+                setTimeout(resolve, waitTime)
+            );
+        }
+    }
+}
 
 function verifyWebhook(req) {
 
