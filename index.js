@@ -1012,18 +1012,20 @@ app.get("/graphql-api-status", async (req, res) => {
             }
         `;
 
-        const response = await axios.post(
-            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/graphql.json`,
-            {
-                query
-            },
-            {
-                headers: {
-                    "X-Shopify-Access-Token": accessToken,
-                    "Content-Type": "application/json"
-                }
+    const response = await retryRequest(() =>
+    axios.post(
+        `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/graphql.json`,
+        {
+            query
+        },
+        {
+            headers: {
+                "X-Shopify-Access-Token": accessToken,
+                "Content-Type": "application/json"
             }
-        );
+        }
+    )
+);
 
         console.log("SHOPIFY API STATUS");
         console.log(response.data.extensions.cost);
