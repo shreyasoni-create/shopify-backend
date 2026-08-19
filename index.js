@@ -22,7 +22,7 @@ async function retryRequest(requestFunction, retries = 3) {
                 throw error;
             }
 
-            const waitTime = attempt * 1000;
+            const waitTime = 1000 * Math.pow(2, attempt - 1);
 
             console.log(
                 `WAITING ${waitTime}ms BEFORE RETRY`
@@ -34,7 +34,6 @@ async function retryRequest(requestFunction, retries = 3) {
         }
     }
 }
-
 function verifyWebhook(req) {
 
   const hmacHeader = req.get("X-Shopify-Hmac-Sha256");
