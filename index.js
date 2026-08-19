@@ -34,6 +34,22 @@ async function retryRequest(requestFunction, retries = 3) {
         }
     }
 }
+const processedUpdateSchema = new mongoose.Schema({
+    updateId: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    processedAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+const ProcessedUpdate = mongoose.model(
+    "ProcessedUpdate",
+    processedUpdateSchema
+);
 function verifyWebhook(req) {
 
   const hmacHeader = req.get("X-Shopify-Hmac-Sha256");
@@ -76,7 +92,52 @@ app.get("/", (req, res) => {
 
 
 
+app.post("/test-idempotency", async (req, res) => {
 
+    try {
+
+        const updateId = req.body.updateId;
+
+        if (!updateId) {
+            return res.status(400).json({
+                success: false,
+                message: "updateId is required"
+            });
+        }
+
+        const existingUpdate = await ProcessedUpdate.findOne({
+            updateId: updateId
+        });
+
+        if (existingUpdate) {
+            return res.json({
+                success: true,
+                message: "Already processed",
+                updateId: updateId
+            });
+        }
+
+        await ProcessedUpdate.create({
+            updateId: updateId
+        });
+
+        return res.json({
+            success: true,
+            message: "New update processed",
+            updateId: updateId
+        });
+
+    } catch (error) {
+
+        console.log("IDEMPOTENCY ERROR");
+        console.log(error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 app.get("/test-post", async (req, res) => {
 
