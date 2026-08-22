@@ -228,6 +228,85 @@ console.log(shiprocketPayload);
     }
 
 });
+
+app.get("/graphql-bulk-products", async (req, res) => {
+
+    try {
+
+        const tokenResponse = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/oauth/access_token`,
+            new URLSearchParams({
+                grant_type: "client_credentials",
+                client_id: process.env.SHOPIFY_CLIENT_ID,
+                client_secret: process.env.SHOPIFY_CLIENT_SECRET
+            }),
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }
+        );
+
+        const accessToken = tokenResponse.data.access_token;
+
+        const query = `
+            mutation {
+                bulkOperationRunQuery(
+                    query: """
+                        {
+                            products {
+                                edges {
+                                    node {
+                                        id
+                                        title
+                                        status
+                                    }
+                                }
+                            }
+                        }
+                    """
+                ) {
+                    bulkOperation {
+                        id
+                        status
+                    }
+                    userErrors {
+                        field
+                        message
+                    }
+                }
+            }
+        `;
+
+        const response = await axios.post(
+            `https://${process.env.SHOPIFY_STORE}/admin/api/2025-10/graphql.json`,
+            {
+                query
+            },
+            {
+                headers: {
+                    "X-Shopify-Access-Token": accessToken,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        console.log("BULK OPERATION RESPONSE");
+        console.log(response.data);
+
+        return res.json(response.data);
+
+    } catch (error) {
+
+        console.log("BULK OPERATION ERROR");
+        console.log(error.response?.data || error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 app.get("/test-shiprocket", async (req, res) => {
 
   const shiprocketPayload = {
